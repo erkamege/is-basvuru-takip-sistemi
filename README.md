@@ -2,6 +2,8 @@
 
 Bu proje, iş arama sürecini daha düzenli, motive edici ve analiz edilebilir hale getirmek için Python ve Streamlit kullanılarak geliştirilmiş interaktif bir web uygulamasıdır. 
 
+🌐 Projenin canlı halini test etmek için [buraya tıklayabilirsiniz.](https://is-basvuru-takip-sistemi-vd2ypbjjmdeg6w68j9ykjk.streamlit.app/)
+
 ## 🚀 Projenin Özellikleri
 * **🕵️ Veri Gizliliği & Demo Modu:** Kişisel başvuru verileri (.gitignore ile) lokalde güvende tutulurken, canlı sistem test edilebilmesi için bulutta sıfırlanabilir bir demo modunda çalışır.
 * **📊 İnteraktif Veri Yönetimi:** Dinamik tablolar üzerinden tek tıkla başvuru ekleme, silme ve durum güncelleme yapılabilir.
