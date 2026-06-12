@@ -7,6 +7,34 @@ import random
 # Sayfa genel ayarları (Bu komut her zaman en üstte olmalıdır)
 st.set_page_config(page_title="İş Başvuru Takip", page_icon="💼", layout="wide")
 
+# --- 🔒 GÜVENLİK DUVARI: ŞİFRELİ GİRİŞ EKRANI ---
+def sifre_kontrol():
+    """Kullanıcı doğru şifreyi girene kadar paneli kilitler."""
+    def sifre_girildi():
+        if st.session_state["girilen_sifre"] == st.secrets["PANEL_SIFRESI"]:
+            st.session_state["sifre_dogru"] = True
+            del st.session_state["girilen_sifre"]
+        else:
+            st.session_state["sifre_dogru"] = False
+
+    if "sifre_dogru" not in st.session_state:
+        st.markdown("<h3 style='text-align: center; margin-top: 50px;'>🔒 Panele Giriş</h3>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.text_input("Lütfen şifrenizi girin:", type="password", on_change=sifre_girildi, key="girilen_sifre")
+        return False
+    elif not st.session_state["sifre_dogru"]:
+        st.markdown("<h3 style='text-align: center; margin-top: 50px;'>🔒 Panele Giriş</h3>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.text_input("Lütfen şifrenizi girin:", type="password", on_change=sifre_girildi, key="girilen_sifre")
+            st.error("❌ Yanlış şifre! Lütfen tekrar deneyin.")
+        return False
+    return True
+
+if not sifre_kontrol():
+    st.stop()
+
 # --- SABİT BEYAZ TEMA AYARI ---
 if not os.path.exists(".streamlit"):
     os.makedirs(".streamlit")
