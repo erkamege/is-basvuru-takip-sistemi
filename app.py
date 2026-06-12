@@ -4,7 +4,7 @@ import plotly.express as px
 import os
 import random
 
-# Sayfa genel ayarları (Bu komut her zaman en üstte olmalıdır)
+# Sayfa genel ayarları 
 st.set_page_config(page_title="İş Başvuru Takip", page_icon="💼", layout="wide")
 
 # --- SABİT BEYAZ TEMA AYARI ---
@@ -15,7 +15,7 @@ config_yolu = ".streamlit/config.toml"
 with open(config_yolu, "w") as f:
     f.write('[theme]\nbase="light"\nbackgroundColor="#ffffff"\nsecondaryBackgroundColor="#f0f2f6"\ntextColor="#31333F"\nprimaryColor="#0077B5"\n')
 
-# --- MOTİVASYON KÖŞESİ (Üretim, Tasarım ve Başarı Üzerine Gerçek Sözler) ---
+# --- MOTİVASYON KÖŞESİ (Üretim, Tasarım ve Başarı Üzerine Sözler) ---
 if "gunun_sozu" not in st.session_state:
     st.session_state["gunun_sozu"] = random.choice([
         
@@ -289,7 +289,7 @@ if "gunun_sozu" not in st.session_state:
 
 secilen_soz = st.session_state["gunun_sozu"]
 
-# --- ANA SAYFA BAŞLIK VE ZARİF MOTİVASYON METNİ ---
+# --- ANA SAYFA BAŞLIK VE MOTİVASYON METNİ ---
 col_baslik, col_motivasyon = st.columns([5, 4])
 
 with col_baslik:
