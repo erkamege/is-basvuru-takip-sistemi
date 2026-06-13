@@ -411,50 +411,52 @@ st.divider()
 
 
 # --- 2. DÜZENLENEBİLİR TABLO VE ARAMA MOTORU ---
+
 st.subheader("📋 Başvuru Listesi")
 
 # 1. Arama ve Filtreleme Alanı
+st.markdown("### 🔍 Başvurularda Ara ve Filtrele")
 col1, col2 = st.columns(2)
 
 with col1:
-    arama = st.text_input("🏢 Şirket Adını Ara", "")
+    arama = st.text_input("🏢 Şirket Adında Ara (Örn: Aselsan)", "")
 
 with col2:
-    secilen_durum = st.multiselect("📌 Duruma Göre Filtrele", DURUMLAR)
+    secilen_durum = st.multiselect("📌 Duruma Göre Filtrele", DURUMLAR, placeholder=" ")
 
-# 2. Gelişmiş Renklendirme Fonksiyonu (Tüm satırı boyar ve emojileri algılar)
+# 2. Gelişmiş Renklendirme Fonksiyonu 
 def tabloyu_renklendir(row):
     durum = str(row["Durum"])
     if "Reddedildi" in durum:
-        return ["background-color: #ffcccc; color: #cc0000; text-decoration: line-through; font-weight: bold;"] * len(row)
-    elif "Kabul" in durum:
-        return ["background-color: #ccffcc; color: #006600; font-weight: bold;"] * len(row)
+        return ["background-color: #ffcccc; color: #cc0000; font-weight: bold; text-decoration: line-through;"] * len(row) # Kırmızı
+    elif "Başvuru Yapıldı" in durum:
+        return ["background-color: #cce5ff; color: #004085; font-weight: bold;"] * len(row) # Açık Mavi
+    elif "Teklif Alındı" in durum:
+        return ["background-color: #fff3cd; color: #856404; font-weight: bold;"] * len(row) # Sarı
     elif "Mülakat" in durum:
-        return ["background-color: #cce5ff; color: #004085; font-weight: bold;"] * len(row)
-    elif "Beklemede" in durum or "Başvuru" in durum:
-        return ["background-color: #ffe8cc; color: #d97706; font-weight: bold;"] * len(row)
+        return ["background-color: #d4edda; color: #155724; font-weight: bold;"] * len(row) # Yeşil (Mülakat için uyumlu)
+    elif "Beklemede" in durum:
+        return ["background-color: #e2e8f0; color: #475569; font-weight: bold;"] * len(row) # Gri (Beklemede olanlar için)
     else:
         return [""] * len(row)
 
-# 3. Veriyi Süzme Mantığı
+# 3. Veriyi Süzme 
 filtrelenmis_df = df.copy()
 
 if arama:
-    # "Sirket" kolonunda arama yapar (Büyük/küçük harf duyarsız)
     filtrelenmis_df = filtrelenmis_df[filtrelenmis_df["Sirket"].str.contains(arama, case=False, na=False)]
 
 if secilen_durum:
     filtrelenmis_df = filtrelenmis_df[filtrelenmis_df["Durum"].isin(secilen_durum)]
 
-# Renkleri uygula
+
 styled_df = filtrelenmis_df.style.apply(tabloyu_renklendir, axis=1)
 TABLO_SIRALAMASI = ["Sirket", "Pozisyon", "Platform", "Tarih", "Durum"]
 
-st.markdown("") # Boşluk
+st.markdown("") # Görsel boşluk
 
 # 4. GÜVENLİK KORUMASI: Akıllı Görünüm Modu
 if arama or secilen_durum:
-    # Eğer filtre varsa tabloyu "Sadece Okunabilir" yap
     st.info("💡 Arama modundayken yanlışlıkla veri silinmemesi için tablo 'Sadece Okunabilir' moddadır. Düzenlemek ve silmek için yukarıdaki filtreleri temizleyin.")
     st.dataframe(
         styled_df, 
@@ -464,7 +466,6 @@ if arama or secilen_durum:
     )
     edited_df = filtrelenmis_df
 else:
-    # Filtre yoksa senin orjinal "Düzenlenebilir" tablonu göster
     edited_df = st.data_editor(
         styled_df, 
         use_container_width=True,
@@ -485,7 +486,7 @@ else:
         st.cache_data.clear()
         st.success("✅ Tüm güncellemeler başarıyla veritabanına işlendi!")
         st.rerun()
-
+        
 st.divider()
 
 
