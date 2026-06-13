@@ -389,11 +389,10 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     
     varsayilan_pozisyonlar = [
         "Teknik Ressam", "Proje Tasarım Uzman Yardımcısı", "Elektrik-Elektronik Teknisyeni", 
-        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni", "Mühendis" , "Tekniker" , "Doktor", "Mimar"
+        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni"
     ]
 
     # 2. CSV'den mevcutları öğren ve varsayılanlarla birleştir 
-    # 'set()' komutu aynı isimden iki tane varsa birini siler, 'sorted()' ise listeyi alfabetik (A-Z) sıralar.
     mevcut_sirketler = df["Sirket"].dropna().unique().tolist() if "Sirket" in df.columns else []
     mevcut_pozisyonlar = df["Pozisyon"].dropna().unique().tolist() if "Pozisyon" in df.columns else []
 
@@ -404,45 +403,45 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     sirket_secenekleri = tum_sirketler + ["Diğer (Yeni Ekle)"]
     pozisyon_secenekleri = tum_pozisyonlar + ["Diğer (Yeni Ekle)"]
 
-    with st.form("yeni_basvuru_formu", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            # Şirket Akıllı Seçim
-            secilen_sirket = st.selectbox("Şirket Adı *", sirket_secenekleri)
-            if secilen_sirket == "Diğer (Yeni Ekle)":
-                yeni_sirket = st.text_input("Yeni Şirket Adını Yazın", placeholder="Örn: BMC")
-            else:
-                yeni_sirket = secilen_sirket
+    # DİKKAT: st.form yapısını kaldırdık, artık anında tepki verecek!
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        secilen_sirket = st.selectbox("Şirket Adı *", sirket_secenekleri)
+        if secilen_sirket == "Diğer (Yeni Ekle)":
+            yeni_sirket = st.text_input("✨ Yeni Şirket Adını Yazın", placeholder="Örn: BMC")
+        else:
+            yeni_sirket = secilen_sirket
 
-            # Pozisyon Akıllı Seçim
-            secilen_pozisyon = st.selectbox("Pozisyon *", pozisyon_secenekleri)
-            if secilen_pozisyon == "Diğer (Yeni Ekle)":
-                yeni_pozisyon = st.text_input("Yeni Pozisyonu Yazın", placeholder="Örn: Kalite Kontrol Uzmanı")
-            else:
-                yeni_pozisyon = secilen_pozisyon
+        secilen_pozisyon = st.selectbox("Pozisyon *", pozisyon_secenekleri)
+        if secilen_pozisyon == "Diğer (Yeni Ekle)":
+            yeni_pozisyon = st.text_input("✨ Yeni Pozisyonu Yazın", placeholder="Örn: Kalite Kontrol Uzmanı")
+        else:
+            yeni_pozisyon = secilen_pozisyon
 
-            yeni_platform = st.selectbox("Platform", PLATFORMLAR)
+        yeni_platform = st.selectbox("Platform", PLATFORMLAR)
+        
+    with col2:
+        yeni_tarih = st.date_input("Başvuru Tarihi", format="DD/MM/YYYY")
+        yeni_durum = st.selectbox("Güncel Durum", DURUMLAR)
+        
+    # form_submit_button yerine standart st.button kullanıyoruz
+    if st.button("💾 Başvuruyu Kaydet"):
+        if yeni_sirket == "" or yeni_pozisyon == "" or yeni_sirket == "Diğer (Yeni Ekle)" or yeni_pozisyon == "Diğer (Yeni Ekle)":
+            st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon alanlarını geçerli bir şekilde doldurunuz!")
+        else:
+            yeni_veri = {
+                "Sirket": yeni_sirket, "Pozisyon": yeni_pozisyon, "Platform": yeni_platform,
+                "Tarih": yeni_tarih.strftime("%d/%m/%Y"), "Durum": yeni_durum
+            }
+            yeni_df = pd.DataFrame([yeni_veri])
             
-        with col2:
-            yeni_tarih = st.date_input("Başvuru Tarihi", format="DD/MM/YYYY")
-            yeni_durum = st.selectbox("Güncel Durum", DURUMLAR)
-            
-        submit_button = st.form_submit_button("💾 Başvuruyu Kaydet")
-        if submit_button:
-            if yeni_sirket == "" or yeni_pozisyon == "" or yeni_sirket == "Diğer (Yeni Ekle)" or yeni_pozisyon == "Diğer (Yeni Ekle)":
-                st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon alanlarını geçerli bir şekilde doldurunuz!")
-            else:
-                yeni_veri = {
-                    "Sirket": yeni_sirket, "Pozisyon": yeni_pozisyon, "Platform": yeni_platform,
-                    "Tarih": yeni_tarih.strftime("%d/%m/%Y"), "Durum": yeni_durum
-                }
-                yeni_df = pd.DataFrame([yeni_veri])
-                
-                df_csv = pd.read_csv("basvurular.csv") if os.path.exists("basvurular.csv") else pd.DataFrame(columns=["Sirket", "Pozisyon", "Platform", "Tarih", "Durum"])
-                df_csv = pd.concat([df_csv, yeni_df], ignore_index=True)
-                df_csv.to_csv("basvurular.csv", index=False)
-                st.cache_data.clear()
-                st.rerun()
+            df_csv = pd.read_csv("basvurular.csv") if os.path.exists("basvurular.csv") else pd.DataFrame(columns=["Sirket", "Pozisyon", "Platform", "Tarih", "Durum"])
+            df_csv = pd.concat([df_csv, yeni_df], ignore_index=True)
+            df_csv.to_csv("basvurular.csv", index=False)
+            st.cache_data.clear()
+            st.success("✅ Yeni başvuru eklendi!")
+            st.rerun()
                 
 st.divider()
 
