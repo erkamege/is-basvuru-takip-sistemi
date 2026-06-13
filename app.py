@@ -326,7 +326,7 @@ DURUMLAR = [
     "📝 Teknik Test Gönderildi", "🗣️ İK Mülakatı", "💻 Teknik Mülakat", "❌ Reddedildi"
 ]
 
-PLATFORMLAR = ["LinkedIn", "Kariyer.net", "Toptalent" "Şirket Sitesi", "Referans", "Diğer"]
+PLATFORMLAR = ["LinkedIn", "Kariyer.net", "Toptalent" , "Şirket Sitesi", "Referans", "Diğer"]
 
 @st.cache_data
 def veri_yukle():
