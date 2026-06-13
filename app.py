@@ -462,6 +462,7 @@ if arama or secilen_durum:
         hide_index=False,
         column_order=TABLO_SIRALAMASI
     )
+    edited_df = filtrelenmis_df
 else:
     # Filtre yoksa senin orjinal "Düzenlenebilir" tablonu göster
     edited_df = st.data_editor(
