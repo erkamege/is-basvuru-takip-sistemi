@@ -378,22 +378,59 @@ else:
 #st.divider()
 
 
-# --- 1. YENİ BAŞVURU EKLEME FORMU ---
+# --- YENİ BAŞVURU EKLEME FORMU ---
 with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
+    
+    # 1. Varsayılan (Sabit) Listelerimiz
+    varsayilan_sirketler = [
+        "Aselsan", "TUSAŞ", "Baykar", "Ford Otosan", "Toyota", "Oyak Renault", 
+        "Vestel", "Siemens", "Enerjisa", "Zorlu Enerji", "Tüpraş", "Şişecam" , "Mercedes-Benz"
+    ]
+    
+    varsayilan_pozisyonlar = [
+        "Teknik Ressam", "Proje Tasarım Uzman Yardımcısı", "Elektrik-Elektronik Teknisyeni", 
+        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni", "Mühendis" , "Tekniker" , "Doktor", "Mimar"
+    ]
+
+    # 2. CSV'den mevcutları öğren ve varsayılanlarla birleştir 
+    # 'set()' komutu aynı isimden iki tane varsa birini siler, 'sorted()' ise listeyi alfabetik (A-Z) sıralar.
+    mevcut_sirketler = df["Sirket"].dropna().unique().tolist() if "Sirket" in df.columns else []
+    mevcut_pozisyonlar = df["Pozisyon"].dropna().unique().tolist() if "Pozisyon" in df.columns else []
+
+    tum_sirketler = sorted(list(set(varsayilan_sirketler + mevcut_sirketler)))
+    tum_pozisyonlar = sorted(list(set(varsayilan_pozisyonlar + mevcut_pozisyonlar)))
+
+    # 3. Listelerin sonuna "Diğer" seçeneğini ekle
+    sirket_secenekleri = tum_sirketler + ["Diğer (Yeni Ekle)"]
+    pozisyon_secenekleri = tum_pozisyonlar + ["Diğer (Yeni Ekle)"]
+
     with st.form("yeni_basvuru_formu", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
-            yeni_sirket = st.text_input("Şirket Adı *")
-            yeni_pozisyon = st.text_input("Pozisyon *")
+            # Şirket Akıllı Seçim
+            secilen_sirket = st.selectbox("Şirket Adı *", sirket_secenekleri)
+            if secilen_sirket == "Diğer (Yeni Ekle)":
+                yeni_sirket = st.text_input("Yeni Şirket Adını Yazın", placeholder="Örn: BMC")
+            else:
+                yeni_sirket = secilen_sirket
+
+            # Pozisyon Akıllı Seçim
+            secilen_pozisyon = st.selectbox("Pozisyon *", pozisyon_secenekleri)
+            if secilen_pozisyon == "Diğer (Yeni Ekle)":
+                yeni_pozisyon = st.text_input("Yeni Pozisyonu Yazın", placeholder="Örn: Kalite Kontrol Uzmanı")
+            else:
+                yeni_pozisyon = secilen_pozisyon
+
             yeni_platform = st.selectbox("Platform", PLATFORMLAR)
+            
         with col2:
             yeni_tarih = st.date_input("Başvuru Tarihi", format="DD/MM/YYYY")
             yeni_durum = st.selectbox("Güncel Durum", DURUMLAR)
             
         submit_button = st.form_submit_button("💾 Başvuruyu Kaydet")
         if submit_button:
-            if yeni_sirket == "" or yeni_pozisyon == "":
-                st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon alanlarını doldurunuz!")
+            if yeni_sirket == "" or yeni_pozisyon == "" or yeni_sirket == "Diğer (Yeni Ekle)" or yeni_pozisyon == "Diğer (Yeni Ekle)":
+                st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon alanlarını geçerli bir şekilde doldurunuz!")
             else:
                 yeni_veri = {
                     "Sirket": yeni_sirket, "Pozisyon": yeni_pozisyon, "Platform": yeni_platform,
@@ -406,7 +443,7 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
                 df_csv.to_csv("basvurular.csv", index=False)
                 st.cache_data.clear()
                 st.rerun()
-
+                
 st.divider()
 
 
@@ -463,6 +500,7 @@ else:
         use_container_width=True,
         hide_index=False, 
         num_rows="dynamic", 
+        disabled=["Sirket", "Pozisyon"],
         column_config={
             "Durum": st.column_config.SelectboxColumn("Güncel Durum", options=DURUMLAR, required=True),
             "Platform": st.column_config.SelectboxColumn("Platform", options=PLATFORMLAR, required=True),
