@@ -6,7 +6,7 @@ Bu proje, iş arama sürecini daha düzenli, motive edici ve analiz edilebilir h
 
 ## 🚀 Projenin Özellikleri
 * **🕵️ Veri Gizliliği & Demo Modu:** Kişisel başvuru verileri (.gitignore ile) lokalde güvende tutulurken, canlı sistem test edilebilmesi için bulutta sıfırlanabilir bir demo modunda çalışır.
-* **📊 İnteraktif Veri Yönetimi:** Dinamik tablolar üzerinden tek tıkla başvuru ekleme, silme ve durum güncelleme yapılabilir.
+* **📊 İnteraktif Veri Yönetimi:** Dinamik tablolar üzerinden tek tıkla başvuru ekleme, silme ve durum güncelleme yapılabilir ve filtreleme özelliği sayesinde başvurular daha kolay aranabilir.
 * **📈 Canlı İstatistikler:** Plotly entegrasyonu sayesinde mülakat ve başvuru durumlarının otomatik grafiksel analizi sağlanır.
 * **🎯 Oyunlaştırma:** Haftalık başvuru hedefleri ve ilerleme çubuğu ile süreci takip etmek daha kolay hale getirilmiştir.
 * **💡 Motivasyon Köşesi:** Her girişte sayfada rastgele beliren, sinema , teknoloji , üretim dünyasından motivasyon sözleri yer alır.
