@@ -381,15 +381,15 @@ else:
 # --- YENİ BAŞVURU EKLEME FORMU ---
 with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     
-    # 1. Varsayılan Listeler
+    # 1. Varsayılan (Sabit ve Kalıcı) Listelerimiz
     varsayilan_sirketler = [
-        "Aselsan", "TUSAŞ", "Baykar", "Ford Otosan", "Toyota", "Oyak Renault", 
-        "Vestel", "Siemens", "Enerjisa", "Zorlu Enerji", "Tüpraş", "Şişecam", "Otokar" , "Mercedes-Benz"
+        "Aselsan", "TUSAŞ", "Baykar", "Ford Otosan", "Toyota", "Teksan", 
+        "Mercedes-Benz", "Siemens", "Enerjisa", "Zorlu Enerji", "Tüpraş", "Şişecam", "Otokar"
     ]
     
     varsayilan_pozisyonlar = [
         "Teknik Ressam", "Proje Tasarım Uzman Yardımcısı", "Elektrik-Elektronik Teknisyeni", 
-        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni" , "Mühendis" , "Mimar" , "Doktor"
+        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni" , "Mühendis" , "Mimar" , "Tekniker"
     ]
 
     # 2. CSV'den mevcutları öğren ve varsayılanlarla birleştir 
@@ -399,9 +399,11 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     tum_sirketler = sorted(list(set(varsayilan_sirketler + mevcut_sirketler)))
     tum_pozisyonlar = sorted(list(set(varsayilan_pozisyonlar + mevcut_pozisyonlar)))
 
-    # 3. Listelerin En Başına "Seçiniz", En Sonuna "Diğer" Eklendi
+    # 3. Tüm Listelerin Başına "Seçiniz" Eklendi
     sirket_secenekleri = [" Seçiniz..."] + tum_sirketler + ["Diğer (Yeni Ekle)"]
     pozisyon_secenekleri = [" Seçiniz..."] + tum_pozisyonlar + ["Diğer (Yeni Ekle)"]
+    platform_secenekleri = [" Seçiniz..."] + PLATFORMLAR
+    durum_secenekleri = [" Seçiniz..."] + DURUMLAR
 
     col1, col2 = st.columns(2)
     
@@ -410,7 +412,7 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
         if secilen_sirket == "Diğer (Yeni Ekle)":
             yeni_sirket = st.text_input("✨ Yeni Şirket Adını Yazın", placeholder="Örn: BMC")
         elif secilen_sirket == " Seçiniz...":
-            yeni_sirket = "" # Kullanıcı seçiniz'de bıraktıysa boş algılar
+            yeni_sirket = ""
         else:
             yeni_sirket = secilen_sirket
 
@@ -422,15 +424,18 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
         else:
             yeni_pozisyon = secilen_pozisyon
 
-        yeni_platform = st.selectbox("Platform", PLATFORMLAR)
+        yeni_platform = st.selectbox("Platform *", platform_secenekleri)
         
     with col2:
-        yeni_tarih = st.date_input("Başvuru Tarihi", format="DD/MM/YYYY")
-        yeni_durum = st.selectbox("Güncel Durum", DURUMLAR)
+        # Tarih kutusunu "value=None" ile başlangıçta tamamen boş yapıyoruz
+        yeni_tarih = st.date_input("Başvuru Tarihi *", value=None, format="DD/MM/YYYY")
+        
+        yeni_durum = st.selectbox("Güncel Durum *", durum_secenekleri)
         
     if st.button("💾 Başvuruyu Kaydet"):
-        if yeni_sirket == "" or yeni_pozisyon == "":
-            st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon seçiniz veya yazınız!")
+        # Boş bırakılan alan var mı diye tüm kutuları kontrol ediyoruz
+        if yeni_sirket == "" or yeni_pozisyon == "" or yeni_platform == " Seçiniz..." or yeni_durum == " Seçiniz..." or yeni_tarih is None:
+            st.warning("⚠️ Lütfen yıldızlı (*) tüm zorunlu alanları (Şirket, Pozisyon, Platform, Tarih, Durum) doldurunuz!")
         else:
             yeni_veri = {
                 "Sirket": yeni_sirket, "Pozisyon": yeni_pozisyon, "Platform": yeni_platform,
