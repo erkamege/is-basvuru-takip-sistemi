@@ -415,11 +415,10 @@ st.divider()
 st.subheader("📋 Başvuru Listesi")
 
 # 1. Arama ve Filtreleme Alanı
-st.markdown("### 🔍 Başvurularda Ara ve Filtrele")
 col1, col2 = st.columns(2)
 
 with col1:
-    arama = st.text_input("🏢 Şirket Adında Ara (Örn: Aselsan)", "")
+    arama = st.text_input("🏢 Şirket Adını Ara", "")
 
 with col2:
     secilen_durum = st.multiselect("📌 Duruma Göre Filtrele", DURUMLAR, placeholder=" ")
