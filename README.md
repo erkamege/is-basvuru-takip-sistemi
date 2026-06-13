@@ -9,7 +9,7 @@ Bu proje, iş arama sürecini daha düzenli, motive edici ve analiz edilebilir h
 * **📊 İnteraktif Veri Yönetimi:** Dinamik tablolar üzerinden tek tıkla başvuru ekleme, silme ve durum güncelleme yapılabilir.
 * **📈 Canlı İstatistikler:** Plotly entegrasyonu sayesinde mülakat ve başvuru durumlarının otomatik grafiksel analizi sağlanır.
 * **🎯 Oyunlaştırma:** Haftalık başvuru hedefleri ve ilerleme çubuğu ile süreci takip etmek daha kolay hale getirilmiştir.
-* **💡 Motivasyon Köşesi:** Her girişte sayfada rastgele beliren, sinema , teknoloji , üretim dünyasından gerçek motivasyon sözleri yer alır.
+* **💡 Motivasyon Köşesi:** Her girişte sayfada rastgele beliren, sinema , teknoloji , üretim dünyasından motivasyon sözleri yer alır.
 
 ## 🛠️ Kullanılan Teknolojiler
 * **Python**
