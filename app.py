@@ -381,15 +381,15 @@ else:
 # --- YENİ BAŞVURU EKLEME FORMU ---
 with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     
-    # 1. Varsayılan (Sabit) Listelerimiz
+    # 1. Varsayılan Listeler
     varsayilan_sirketler = [
         "Aselsan", "TUSAŞ", "Baykar", "Ford Otosan", "Toyota", "Oyak Renault", 
-        "Vestel", "Siemens", "Enerjisa", "Zorlu Enerji", "Tüpraş", "Şişecam" , "Mercedes-Benz"
+        "Vestel", "Siemens", "Enerjisa", "Zorlu Enerji", "Tüpraş", "Şişecam", "Otokar" , "Mercedes-Benz"
     ]
     
     varsayilan_pozisyonlar = [
         "Teknik Ressam", "Proje Tasarım Uzman Yardımcısı", "Elektrik-Elektronik Teknisyeni", 
-        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni"
+        "Enerji Yöneticisi", "Ar-Ge Asistanı", "CAD/CAM Tasarımcısı", "Üretim Teknisyeni" , "Mühendis" , "Mimar" , "Doktor"
     ]
 
     # 2. CSV'den mevcutları öğren ve varsayılanlarla birleştir 
@@ -399,23 +399,26 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
     tum_sirketler = sorted(list(set(varsayilan_sirketler + mevcut_sirketler)))
     tum_pozisyonlar = sorted(list(set(varsayilan_pozisyonlar + mevcut_pozisyonlar)))
 
-    # 3. Listelerin sonuna "Diğer" seçeneğini ekle
-    sirket_secenekleri = tum_sirketler + ["Diğer (Yeni Ekle)"]
-    pozisyon_secenekleri = tum_pozisyonlar + ["Diğer (Yeni Ekle)"]
+    # 3. Listelerin En Başına "Seçiniz", En Sonuna "Diğer" Eklendi
+    sirket_secenekleri = [" Seçiniz..."] + tum_sirketler + ["Diğer (Yeni Ekle)"]
+    pozisyon_secenekleri = [" Seçiniz..."] + tum_pozisyonlar + ["Diğer (Yeni Ekle)"]
 
-    # DİKKAT: st.form yapısını kaldırdık, artık anında tepki verecek!
     col1, col2 = st.columns(2)
     
     with col1:
         secilen_sirket = st.selectbox("Şirket Adı *", sirket_secenekleri)
         if secilen_sirket == "Diğer (Yeni Ekle)":
             yeni_sirket = st.text_input("✨ Yeni Şirket Adını Yazın", placeholder="Örn: BMC")
+        elif secilen_sirket == " Seçiniz...":
+            yeni_sirket = "" # Kullanıcı seçiniz'de bıraktıysa boş algılar
         else:
             yeni_sirket = secilen_sirket
 
         secilen_pozisyon = st.selectbox("Pozisyon *", pozisyon_secenekleri)
         if secilen_pozisyon == "Diğer (Yeni Ekle)":
             yeni_pozisyon = st.text_input("✨ Yeni Pozisyonu Yazın", placeholder="Örn: Kalite Kontrol Uzmanı")
+        elif secilen_pozisyon == " Seçiniz...":
+            yeni_pozisyon = ""
         else:
             yeni_pozisyon = secilen_pozisyon
 
@@ -425,10 +428,9 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
         yeni_tarih = st.date_input("Başvuru Tarihi", format="DD/MM/YYYY")
         yeni_durum = st.selectbox("Güncel Durum", DURUMLAR)
         
-    # form_submit_button yerine standart st.button kullanıyoruz
     if st.button("💾 Başvuruyu Kaydet"):
-        if yeni_sirket == "" or yeni_pozisyon == "" or yeni_sirket == "Diğer (Yeni Ekle)" or yeni_pozisyon == "Diğer (Yeni Ekle)":
-            st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon alanlarını geçerli bir şekilde doldurunuz!")
+        if yeni_sirket == "" or yeni_pozisyon == "":
+            st.warning("⚠️ Lütfen Şirket Adı ve Pozisyon seçiniz veya yazınız!")
         else:
             yeni_veri = {
                 "Sirket": yeni_sirket, "Pozisyon": yeni_pozisyon, "Platform": yeni_platform,
@@ -442,37 +444,18 @@ with st.expander("➕ Yeni Başvuru Ekle", expanded=False):
             st.cache_data.clear()
             st.success("✅ Yeni başvuru eklendi!")
             st.rerun()
-                
-st.divider()
-
 
 # --- 2. DÜZENLENEBİLİR TABLO VE ARAMA MOTORU ---
 st.subheader("📋 Başvuru Listesi")
 
-# 1. Arama ve Filtreleme Alanı
 col1, col2 = st.columns(2)
 
 with col1:
-    arama = st.text_input("🏢 Şirket Adını Ara ")
+    arama = st.text_input("🏢 Şirket Adını Ara", "")
 
 with col2:
     secilen_durum = st.multiselect("📌 Duruma Göre Filtrele", DURUMLAR, placeholder=" ")
 
-# 2. Gelişmiş Renklendirme Fonksiyonu 
-def tabloyu_renklendir(row):
-    durum = str(row["Durum"])
-    if "Reddedildi" in durum:
-        return ["color: #ff0000; font-weight: bold; text-decoration: line-through;"] * len(row) # Keskin Kırmızı
-    elif "Teklif Alındı" in durum:
-        return ["color: #d97706; font-weight: bold;"] * len(row) # Koyu Sarı / Turuncu (Beyaz ekranda okunabilmesi için)
-    elif "Başvuru Yapıldı" in durum:
-        return ["color: #0066cc; font-weight: bold;"] * len(row) # Mavi
-    elif "Mülakat" in durum:
-        return ["color: #009900; font-weight: bold;"] * len(row) # Yeşil
-    else:
-        return ["color: #475569; font-weight: bold;"] * len(row) # Standart Gri
-
-# 3. Veriyi Süzme ve Sütunları Düzenleme
 filtrelenmis_df = df.copy()
 
 if arama:
@@ -481,25 +464,24 @@ if arama:
 if secilen_durum:
     filtrelenmis_df = filtrelenmis_df[filtrelenmis_df["Durum"].isin(secilen_durum)]
 
-
 TABLO_SIRALAMASI = ["Sirket", "Pozisyon", "Platform", "Tarih", "Durum"]
 filtrelenmis_df = filtrelenmis_df[TABLO_SIRALAMASI]
-styled_df = filtrelenmis_df.style.apply(tabloyu_renklendir, axis=1)
 
 st.markdown("") 
 
-# 4. GÜVENLİK KORUMASI: Akıllı Görünüm Modu
 if arama or secilen_durum:
     st.info("💡 Arama modundayken yanlışlıkla veri silinmemesi için tablo 'Sadece Okunabilir' moddadır. Düzenlemek ve silmek için yukarıdaki filtreleri temizleyin.")
-    st.dataframe(styled_df, use_container_width=True, hide_index=False)
+    # Sade tablo ekrana basılır
+    st.dataframe(filtrelenmis_df, use_container_width=True, hide_index=False)
     edited_df = filtrelenmis_df
 else:
+    # Sade ve kilitli tablo (Şirket ve Pozisyon düzenlenemez)
     edited_df = st.data_editor(
-        styled_df, 
+        filtrelenmis_df, 
         use_container_width=True,
         hide_index=False, 
         num_rows="dynamic", 
-        disabled=["Sirket", "Pozisyon"],
+        disabled=["Sirket", "Pozisyon"], 
         column_config={
             "Durum": st.column_config.SelectboxColumn("Güncel Durum", options=DURUMLAR, required=True),
             "Platform": st.column_config.SelectboxColumn("Platform", options=PLATFORMLAR, required=True),
